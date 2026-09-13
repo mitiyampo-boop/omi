@@ -3,13 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🛍️super MIX</title>
+  <title>Sistema Supermercado POS - Multi-Usuario</title>
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- SheetJS para Excel -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
     :root {
       --primary: #2563eb;
@@ -18,7 +16,6 @@
       --success: #16a34a;
       --warning: #d97706;
       --danger: #dc2626;
-      --alegra: #00b0ff;
       --bg-dark: #0f172a;
       --bg-main: #f8fafc;
       --text-main: #334155;
@@ -96,10 +93,6 @@
     .btn-success { background: var(--success); color: white; }
     .btn-danger { background: var(--danger); color: white; }
     .btn-secondary { background: var(--secondary); color: white; }
-    .btn-excel { background: #107c41; color: white; }
-    .btn-excel:hover { background: #0b592e; }
-    .btn-alegra { background: #0077ff; color: white; }
-    .btn-alegra:hover { background: #0055cc; }
     .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
 
     .badge { padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
@@ -107,7 +100,6 @@
     .badge-warning { background: #fef3c7; color: #b45309; }
     .badge-danger { background: #fee2e2; color: #b91c1c; }
     .badge-secondary { background: #f1f5f9; color: #475569; }
-    .badge-alegra { background: #e0f2fe; color: #0284c7; }
 
     /* MODALS */
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; }
@@ -124,16 +116,447 @@
       #print-area, #print-area * { visibility: visible; }
       #print-area { position: absolute; left: 0; top: 0; width: 80mm; }
     }
+
+    /* =========================================================
+       RESPONSIVE: CELULARES, TABLETS Y PANTALLAS PEQUEÑAS
+       ========================================================= */
+    html, body {
+      width: 100%;
+      max-width: 100%;
+      min-height: 100%;
+    }
+
+    body {
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .main-content {
+      min-width: 0;
+      width: 100%;
+    }
+
+    .content-section {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    .table-container {
+      max-width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .table-container table {
+      min-width: 650px;
+    }
+
+    .modal-overlay {
+      padding: 12px;
+    }
+
+    .modal-card {
+      max-width: min(500px, 100%);
+    }
+
+    .mobile-menu-toggle,
+    .sidebar-backdrop {
+      display: none;
+    }
+
+    /* Tablet */
+    @media (max-width: 900px) {
+      :root {
+        --sidebar-width: 220px;
+      }
+
+      .sidebar {
+        width: var(--sidebar-width);
+      }
+
+      header {
+        padding: .85rem 1rem;
+      }
+
+      .content-section {
+        padding: 1rem;
+      }
+
+      .metrics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .85rem;
+      }
+
+      .pos-container {
+        grid-template-columns: minmax(0, 1.35fr) minmax(280px, 1fr);
+        gap: 1rem;
+      }
+
+      .pos-container > div {
+        min-width: 0;
+      }
+    }
+
+    /* Celular */
+    @media (max-width: 700px) {
+      body {
+        display: block;
+        overflow: hidden;
+      }
+
+      .mobile-menu-toggle {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 11000;
+        width: 44px;
+        height: 44px;
+        border: 0;
+        border-radius: 10px;
+        background: var(--bg-dark);
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.15rem;
+        box-shadow: 0 3px 10px rgba(0,0,0,.2);
+        cursor: pointer;
+      }
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: min(82vw, 300px);
+        max-width: 300px;
+        z-index: 10500;
+        transform: translateX(-105%);
+        transition: transform .25s ease;
+        box-shadow: 8px 0 25px rgba(0,0,0,.22);
+      }
+
+      .sidebar.mobile-open {
+        transform: translateX(0);
+      }
+
+      .sidebar-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 10400;
+        background: rgba(15, 23, 42, .48);
+      }
+
+      .sidebar-backdrop.active {
+        display: block;
+      }
+
+      .main-content {
+        width: 100%;
+        height: 100dvh;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      header {
+        min-height: 64px;
+        padding: .75rem .75rem .75rem 64px;
+        gap: 8px;
+      }
+
+      header h2 {
+        min-width: 0;
+        font-size: 1.05rem;
+        line-height: 1.2;
+      }
+
+      .user-info {
+        gap: 7px;
+        min-width: 0;
+      }
+
+      .user-info > div {
+        min-width: 0;
+        text-align: right;
+      }
+
+      #active-user-name {
+        display: block;
+        max-width: 110px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: .82rem;
+      }
+
+      #active-user-role {
+        font-size: .65rem;
+      }
+
+      .user-info .btn {
+        padding: .42rem .55rem;
+      }
+
+      .user-info .btn i {
+        margin: 0;
+      }
+
+      .user-info .btn {
+        font-size: 0;
+      }
+
+      .user-info .btn i {
+        font-size: .9rem;
+      }
+
+      .content-section {
+        padding: .75rem;
+      }
+
+      .metrics-grid {
+        grid-template-columns: 1fr;
+        gap: .7rem;
+      }
+
+      .card {
+        padding: .9rem;
+      }
+
+      .metric-card {
+        gap: .75rem;
+      }
+
+      .metric-icon {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        font-size: 1.2rem;
+      }
+
+      .metric-val {
+        font-size: 1.15rem;
+      }
+
+      /* Barras de búsqueda y botones: una columna */
+      .content-section > div[style*="justify-content:space-between"],
+      .content-section > div[style*="justify-content:space-between;"],
+      .content-section > div[style*="display:flex"] {
+        max-width: 100%;
+      }
+
+      #sec-productos > div:first-child,
+      #sec-proveedores > div:first-child,
+      #sec-clientes > div:first-child,
+      #sec-usuarios > div:first-child,
+      #sec-reportes .card > div:first-child {
+        flex-direction: column !important;
+        align-items: stretch !important;
+      }
+
+      #sec-productos > div:first-child > div,
+      #sec-proveedores > div:first-child > *,
+      #sec-clientes > div:first-child > * {
+        width: 100% !important;
+      }
+
+      #prod-search,
+      #prod-cat-filter,
+      #prov-search,
+      #cli-search {
+        width: 100% !important;
+      }
+
+      #sec-productos .btn,
+      #sec-proveedores .btn,
+      #sec-clientes .btn,
+      #sec-usuarios .btn,
+      #sec-reportes .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      /* POS: una columna en celular */
+      .pos-container {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        min-height: 0;
+        gap: .75rem;
+      }
+
+      .pos-container > div:first-child {
+        width: 100%;
+      }
+
+      .pos-container > div:first-child > div:first-child {
+        flex-direction: column !important;
+        gap: 8px !important;
+      }
+
+      #pos-barcode,
+      #pos-search {
+        width: 100%;
+        min-height: 44px;
+      }
+
+      #sec-ventas .table-container {
+        max-height: 48vh !important;
+      }
+
+      .cart-summary {
+        width: 100%;
+        min-height: 300px;
+      }
+
+      .cart-item {
+        gap: 8px;
+      }
+
+      .cart-item > div:first-child {
+        min-width: 0;
+        overflow-wrap: anywhere;
+      }
+
+      .cart-item > div:last-child {
+        flex-shrink: 0;
+      }
+
+      /* El resumen financiero pasa a vertical */
+      #sec-reportes .card > div[style*="gap:2rem"] {
+        flex-direction: column !important;
+        gap: .65rem !important;
+      }
+
+      /* Formularios */
+      .form-control {
+        min-height: 42px;
+        font-size: 16px; /* evita zoom automático en iPhone */
+      }
+
+      .btn {
+        min-height: 42px;
+        touch-action: manipulation;
+      }
+
+      /* Modales */
+      .modal-overlay {
+        align-items: flex-start;
+        padding: 12px;
+        overflow-y: auto;
+      }
+
+      .modal-card {
+        width: 100%;
+        max-width: 100%;
+        max-height: calc(100dvh - 24px);
+        margin: auto 0;
+        padding: 1rem;
+      }
+
+      #modal-recibo > div {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .receipt-modal {
+        width: 100%;
+        max-width: 340px;
+        margin: 0 auto;
+      }
+
+      #modal-recibo > div > div:last-child {
+        flex-direction: column;
+      }
+
+      #modal-recibo > div > div:last-child .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      /* Dashboard */
+      #chart-sales {
+        width: 100% !important;
+        max-width: 100%;
+      }
+
+      /* Tablas: se desplazan dentro de su propio contenedor,
+         nunca la página completa */
+      .table-container table {
+        min-width: 680px;
+      }
+
+      /* Oculta la barra de scroll en algunos navegadores sin
+         eliminar el desplazamiento táctil */
+      .table-container::-webkit-scrollbar {
+        height: 7px;
+      }
+    }
+
+    /* Celulares muy pequeños */
+    @media (max-width: 380px) {
+      header {
+        padding-left: 60px;
+      }
+
+      header h2 {
+        font-size: .95rem;
+      }
+
+      #active-user-name {
+        max-width: 80px;
+      }
+
+      .content-section {
+        padding: .55rem;
+      }
+
+      .card {
+        padding: .75rem;
+      }
+
+      .brand {
+        font-size: 1rem;
+      }
+
+      .nav-item {
+        padding: .75rem 1rem;
+      }
+
+      .table-container table {
+        min-width: 620px;
+      }
+    }
+
+    /* Pantallas con poca altura */
+    @media (max-height: 600px) and (max-width: 700px) {
+      header {
+        min-height: 56px;
+      }
+
+      .content-section {
+        padding-top: .6rem;
+      }
+
+      #sec-ventas .table-container {
+        max-height: 38vh !important;
+      }
+
+      .modal-card {
+        max-height: calc(100dvh - 16px);
+      }
+    }
+
   </style>
 </head>
 <body>
 
-  <!-- LOGIN -->
+  <!-- PANTALLA DE INICIO DE SESIÓN -->
   <div id="login-screen">
     <div class="login-card">
       <i class="fa-solid fa-cart-shopping" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
       <h2 style="margin-bottom: 0.5rem;">Iniciar Sesión</h2>
-      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Ingresa tus credenciales para acceder</p>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Ingresa tus credenciales para acceder al sistema</p>
       <form onsubmit="handleLogin(event)">
         <div class="form-group" style="text-align: left;">
           <label>Usuario</label>
@@ -148,9 +571,15 @@
     </div>
   </div>
 
-  <!-- SIDEBAR -->
+
+  <button id="mobile-menu-toggle" class="mobile-menu-toggle" type="button"
+          aria-label="Abrir menú" aria-expanded="false" onclick="toggleMobileMenu()">
+    <i class="fa-solid fa-bars"></i>
+  </button>
+
+  <!-- BARRA LATERAL -->
   <aside class="sidebar">
-    <div class="brand"><i class="fa-solid fa-cart-shopping"></i>super MIX🛒</div>
+    <div class="brand"><i class="fa-solid fa-cart-shopping"></i> SUPERMERCADO</div>
     <ul class="nav-list">
       <li class="nav-item admin-only active" onclick="showSection('dashboard', this)"><i class="fa-solid fa-chart-pie"></i> 1. Dashboard</li>
       <li class="nav-item admin-only" onclick="showSection('productos', this)"><i class="fa-solid fa-box"></i> 2. Productos</li>
@@ -161,11 +590,14 @@
       <li class="nav-item admin-only" onclick="showSection('clientes', this)"><i class="fa-solid fa-users"></i> 7. Clientes</li>
       <li class="nav-item admin-only" onclick="showSection('usuarios', this)"><i class="fa-solid fa-user-shield"></i> 8. Usuarios</li>
       <li class="nav-item admin-only" onclick="showSection('reportes', this)"><i class="fa-solid fa-file-invoice-dollar"></i> 9. Reportes</li>
-      <li class="nav-item admin-only" onclick="showSection('configuracion', this)"><i class="fa-solid fa-gear"></i> 10. Configuración & Alegra</li>
+      <li class="nav-item admin-only" onclick="showSection('configuracion', this)"><i class="fa-solid fa-gear"></i> 10. Configuración</li>
     </ul>
   </aside>
 
-  <!-- MAIN CONTENT -->
+
+  <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="closeMobileMenu()"></div>
+
+  <!-- CONTENIDO PRINCIPAL -->
   <main class="main-content">
     <header>
       <h2 id="section-title">1. Dashboard</h2>
@@ -198,7 +630,7 @@
         <div class="card metric-card">
           <div class="metric-icon" style="background:#fee2e2; color:#dc2626"><i class="fa-solid fa-triangle-exclamation"></i></div>
           <div>
-            <div style="font-size:0.85rem; color:var(--text-muted);">Vencidos / ≤ 20 días</div>
+            <div style="font-size:0.85rem; color:var(--text-muted);">Por Vencer / Vencidos</div>
             <div class="metric-val" id="dash-vencidos">0</div>
           </div>
         </div>
@@ -224,7 +656,6 @@
           <select id="prod-cat-filter" class="form-control" style="width: 200px;" onchange="renderProducts()"></select>
         </div>
         <div style="display:flex; gap:8px;">
-          <button class="btn btn-excel" onclick="exportProductsExcel()"><i class="fa-solid fa-file-excel"></i> Exportar Excel</button>
           <button class="btn btn-secondary" onclick="openCategoryModal()"><i class="fa-solid fa-tags"></i> Nueva Categoría</button>
           <button class="btn btn-primary" onclick="openProductModal()"><i class="fa-solid fa-plus"></i> Registrar Producto</button>
         </div>
@@ -233,7 +664,7 @@
         <table>
           <thead>
             <tr>
-              <th>Código</th><th>Nombre</th><th>Categoría</th><th>Vencimiento (Alerta 20d)</th><th>Precio COP</th><th>Costo COP</th><th>Stock</th><th>Acciones</th>
+              <th>Código</th><th>Nombre</th><th>Categoría</th><th>Vencimiento</th><th>Precio COP</th><th>Costo COP</th><th>Stock</th><th>Acciones</th>
             </tr>
           </thead>
           <tbody id="tbl-productos"></tbody>
@@ -243,9 +674,8 @@
 
     <!-- INVENTARIO -->
     <section id="sec-inventario" class="content-section admin-only">
-      <div class="card" style="margin-bottom: 1rem; display:flex; justify-content:space-between; align-items:center;">
-        <h3>Control de Vencimientos (Alerta 20 Días) e Inventarios</h3>
-        <button class="btn btn-excel" onclick="exportInventoryExcel()"><i class="fa-solid fa-file-excel"></i> Exportar Inventario</button>
+      <div class="card" style="margin-bottom: 1rem;">
+        <h3>Control de Vencimientos e Inventarios</h3>
       </div>
       <div class="table-container">
         <table>
@@ -278,15 +708,11 @@
           <h3>Carrito de Compra</h3>
           <div class="cart-items" id="cart-list"></div>
           <div style="border-top:1px solid var(--border); padding-top:1rem;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem; align-items:center;">
-              <span>Tasa de IVA (%):</span>
-              <input type="number" id="pos-iva-percent" class="form-control" style="width: 80px; text-align:right;" value="19" min="0" max="100" onchange="updateCartUI()">
-            </div>
             <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
               <span>Subtotal:</span><b id="pos-subtotal">$ 0</b>
             </div>
             <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
-              <span>Valor IVA:</span><b id="pos-iva">$ 0</b>
+              <span>IVA (19%):</span><b id="pos-iva">$ 0</b>
             </div>
             <div style="display:flex; justify-content:space-between; font-size:1.2rem; margin-bottom:1rem; color:var(--primary);">
               <span>Total:</span><b id="pos-total">$ 0</b>
@@ -302,10 +728,6 @@
                 <option value="Nequi/Daviplata">Nequi / Daviplata</option>
                 <option value="Tarjeta">Tarjeta Débito/Crédito</option>
               </select>
-            </div>
-            <div class="form-group" style="display:flex; align-items:center; gap:8px;">
-              <input type="checkbox" id="pos-emitir-alegra" checked>
-              <label for="pos-emitir-alegra" style="margin-bottom:0; font-weight:normal;">Emitir Factura Electrónica Alegra DIAN</label>
             </div>
             <button class="btn btn-success" style="width:100%; justify-content:center; padding:0.75rem;" onclick="processSale()"><i class="fa-solid fa-check"></i> Finalizar Venta</button>
           </div>
@@ -350,7 +772,7 @@
       <div class="table-container">
         <table>
           <thead>
-            <tr><th>Cédula/NIT</th><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Acciones</th></tr>
+            <tr><th>Cédula</th><th>Nombre</th><th>Teléfono</th><th>Puntos</th><th>Acciones</th></tr>
           </thead>
           <tbody id="tbl-clientes"></tbody>
         </table>
@@ -360,7 +782,7 @@
     <!-- USUARIOS -->
     <section id="sec-usuarios" class="content-section admin-only">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-        <h3>Gestión de Usuarios y Personal</h3>
+        <h3>Gestión de Usuarios y Personal (Cajeros)</h3>
         <button class="btn btn-primary" onclick="openUsuarioModal()"><i class="fa-solid fa-user-plus"></i> Crear Nuevo Usuario</button>
       </div>
       <div class="table-container">
@@ -386,10 +808,7 @@
       </div>
 
       <div class="card" style="margin-bottom: 1.5rem;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <h3>Resumen Financiero</h3>
-          <button class="btn btn-excel" onclick="exportSalesReportExcel()"><i class="fa-solid fa-file-excel"></i> Exportar Reporte Ventas a Excel</button>
-        </div>
+        <h3>Resumen Financiero</h3>
         <div style="display:flex; gap:2rem; margin-top:1rem;">
           <div>Ingresos por Ventas: <b id="rep-ventas" style="color:var(--success)">$ 0</b></div>
           <div>Inversión en Compras: <b id="rep-compras" style="color:var(--danger)">$ 0</b></div>
@@ -401,55 +820,30 @@
         <h4 style="padding:1rem;">Historial de Ventas</h4>
         <table>
           <thead>
-            <tr><th>Factura</th><th>Atendido por</th><th>Fecha</th><th>Cliente</th><th>Método</th><th>Estado Alegra DIAN</th><th>Total COP</th><th>Acción</th></tr>
+            <tr><th>Factura</th><th>Atendido por</th><th>Fecha</th><th>Cliente</th><th>Método</th><th>Total COP</th><th>Acción</th></tr>
           </thead>
           <tbody id="tbl-reportes-ventas"></tbody>
         </table>
       </div>
     </section>
 
-    <!-- CONFIGURACIÓN & ALEGRA -->
+    <!-- CONFIGURACIÓN -->
     <section id="sec-configuracion" class="content-section admin-only">
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem;">
-        <div class="card">
-          <h3><i class="fa-solid fa-store"></i> Datos del Supermercado</h3>
-          <div class="form-group" style="margin-top: 1rem;">
-            <label>Nombre Comercial:</label>
-            <input type="text" id="cfg-nombre" class="form-control">
-          </div>
-          <div class="form-group">
-            <label>NIT / RUT:</label>
-            <input type="text" id="cfg-nit" class="form-control">
-          </div>
-          <div class="form-group">
-            <label>IVA % Defecto General:</label>
-            <input type="number" id="cfg-iva" class="form-control">
-          </div>
-          <button class="btn btn-success" onclick="saveConfig()"><i class="fa-solid fa-floppy-disk"></i> Guardar Datos</button>
+      <div class="card" style="max-width: 600px;">
+        <h3>Datos del Supermercado</h3>
+        <div class="form-group" style="margin-top: 1rem;">
+          <label>Nombre Comercial:</label>
+          <input type="text" id="cfg-nombre" class="form-control">
         </div>
-
-        <div class="card" style="border-top: 4px solid var(--alegra);">
-          <h3><i class="fa-solid fa-bolt" style="color:var(--alegra);"></i> Integración Facturación Electrónica Alegra</h3>
-          <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem;">
-            Conecta tu cuenta de Alegra Colombia para emitir Facturas Electrónicas directamente a la DIAN.
-          </p>
-          <div class="form-group">
-            <label>Correo Electrónico Alegra:</label>
-            <input type="email" id="cfg-alegra-email" class="form-control" placeholder="usuario@empresa.com">
-          </div>
-          <div class="form-group">
-            <label>Token / API Key Alegra:</label>
-            <input type="password" id="cfg-alegra-token" class="form-control" placeholder="Token generado en Alegra">
-          </div>
-          <div class="form-group">
-            <label>Estado de Integración:</label>
-            <select id="cfg-alegra-active" class="form-control">
-              <option value="true">Activado (Emitir a Alegra)</option>
-              <option value="false">Desactivado (Solo Ventas Locales)</option>
-            </select>
-          </div>
-          <button class="btn btn-alegra" onclick="saveAlegraConfig()"><i class="fa-solid fa-plug"></i> Guardar Credenciales Alegra</button>
+        <div class="form-group">
+          <label>NIT / RUT:</label>
+          <input type="text" id="cfg-nit" class="form-control">
         </div>
+        <div class="form-group">
+          <label>IVA % Defecto:</label>
+          <input type="number" id="cfg-iva" class="form-control">
+        </div>
+        <button class="btn btn-success" onclick="saveConfig()"><i class="fa-solid fa-floppy-disk"></i> Guardar Configuración</button>
       </div>
     </section>
   </main>
@@ -476,7 +870,7 @@
       <div class="form-group"><label>Código de Barras</label><input type="text" id="mp-codigo" class="form-control"></div>
       <div class="form-group"><label>Nombre del Producto</label><input type="text" id="mp-nombre" class="form-control"></div>
       <div class="form-group"><label>Categoría</label><select id="mp-categoria" class="form-control"></select></div>
-      <div class="form-group"><label>Fecha de Vencimiento (Alerta 20 Días)</label><input type="date" id="mp-vencimiento" class="form-control"></div>
+      <div class="form-group"><label>Fecha de Vencimiento</label><input type="date" id="mp-vencimiento" class="form-control"></div>
       <div class="form-group"><label>Precio de Venta COP</label><input type="number" id="mp-precio" class="form-control"></div>
       <div class="form-group"><label>Costo de Compra COP</label><input type="number" id="mp-costo" class="form-control"></div>
       <div class="form-group"><label>Stock Inicial</label><input type="number" id="mp-stock" class="form-control"></div>
@@ -492,9 +886,8 @@
     <div class="modal-card">
       <h3>Registrar Cliente</h3>
       <input type="hidden" id="mc-id">
-      <div class="form-group"><label>Cédula / NIT</label><input type="text" id="mc-cedula" class="form-control"></div>
-      <div class="form-group"><label>Nombre Completo / Razón Social</label><input type="text" id="mc-nombre" class="form-control"></div>
-      <div class="form-group"><label>Correo Electrónico (Para Factura Alegra)</label><input type="email" id="mc-correo" class="form-control"></div>
+      <div class="form-group"><label>Cédula</label><input type="text" id="mc-cedula" class="form-control"></div>
+      <div class="form-group"><label>Nombre Completo</label><input type="text" id="mc-nombre" class="form-control"></div>
       <div class="form-group"><label>Teléfono</label><input type="text" id="mc-telefono" class="form-control"></div>
       <div style="display:flex; justify-content:flex-end; gap:8px;">
         <button class="btn btn-secondary" onclick="closeModals()">Cancelar</button>
@@ -550,12 +943,11 @@
         <div><b>Cajero:</b> <span id="rec-cajero">--</span></div>
         <div><b>Fecha:</b> <span id="rec-fecha"></span></div>
         <div><b>Cliente:</b> <span id="rec-cliente"></span></div>
-        <div id="rec-alegra-info" style="margin-top:4px; font-weight:bold; color:#0284c7;"></div>
         <hr style="margin: 8px 0; border: dashed 1px #000;">
         <div id="rec-items"></div>
         <hr style="margin: 8px 0; border: dashed 1px #000;">
         <div style="display:flex; justify-content:space-between;"><span>Subtotal:</span><span id="rec-subtotal"></span></div>
-        <div style="display:flex; justify-content:space-between;"><span>IVA (<span id="rec-iva-rate">19</span>%):</span><span id="rec-iva"></span></div>
+        <div style="display:flex; justify-content:space-between;"><span>IVA (19%):</span><span id="rec-iva"></span></div>
         <div style="display:flex; justify-content:space-between; font-weight:bold; font-size: 14px;"><span>TOTAL:</span><span id="rec-total"></span></div>
         <hr style="margin: 8px 0; border: dashed 1px #000;">
         <div style="text-align:center; margin-top:10px;">¡Gracias por su compra!</div>
@@ -568,19 +960,18 @@
   </div>
 
   <script>
-    // BD INICIAL
-    let DB = JSON.parse(localStorage.getItem('super_db_zero_v3')) || {
+    // BASE DE DATOS INICIAL EN 0 (SOLO ADMIN POR DEFECTO)
+    let DB = JSON.parse(localStorage.getItem('super_db_zero_v1')) || {
       categorias: ['Lácteos', 'Abarrotes', 'Bebidas', 'Aseo'],
       productos: [],
-      clientes: [{ id: '1', cedula: '2222222222', nombre: 'Cliente General', correo: 'cliente@general.com', telefono: '3000000000', puntos: 0 }],
+      clientes: [{ id: '1', cedula: '2222222222', nombre: 'Cliente General', telefono: '3000000000', puntos: 0 }],
       proveedores: [],
       usuarios: [
         { id: '1', nombre: 'Administrador Principal', user: 'admin', pass: 'admin123', rol: 'Administrador' }
       ],
       ventas: [],
       compras: [],
-      config: { nombre: 'SUPERMERCADO PRO', nit: '900.123.456-1', iva: 19 },
-      alegra: { email: '', token: '', active: false }
+      config: { nombre: 'SUPERMERCADO PRO', nit: '900.123.456-1', iva: 19 }
     };
 
     let currentUser = null;
@@ -588,7 +979,7 @@
     let salesChart = null;
 
     function saveDB() {
-      localStorage.setItem('super_db_zero_v3', JSON.stringify(DB));
+      localStorage.setItem('super_db_zero_v1', JSON.stringify(DB));
       renderAll();
     }
 
@@ -596,21 +987,7 @@
       return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(monto);
     }
 
-    function getVencimientoStatus(fechaStr) {
-      if (!fechaStr) return { label: 'Sin Fecha', class: 'badge-secondary', diffDays: 999 };
-      const hoy = new Date();
-      hoy.setHours(0,0,0,0);
-      const venc = new Date(fechaStr);
-      venc.setHours(0,0,0,0);
-      
-      const diffDays = Math.ceil((venc - hoy) / (1000 * 60 * 60 * 24));
-      
-      if (diffDays < 0) return { label: 'Vencido', class: 'badge-danger', diffDays };
-      if (diffDays <= 20) return { label: `Por vencer (${diffDays}d)`, class: 'badge-warning', diffDays };
-      return { label: 'Vigente', class: 'badge-success', diffDays };
-    }
-
-    // INICIO Y LOGOUT
+    // MANEJO DE SESIÓN DE USUARIOS
     function handleLogin(e) {
       e.preventDefault();
       const uInput = document.getElementById('login-user').value.trim();
@@ -668,127 +1045,22 @@
       document.querySelectorAll('.modal-overlay').forEach(el => el.classList.remove('active'));
     }
 
-    // REINICIO DE VENTAS SOLO ADMIN
+    // REINICIAR VENTAS A 0 (SOLO ADMINISTRADOR)
     function resetSalesToZero() {
       if (!currentUser || currentUser.rol !== 'Administrador') {
         return alert('Acceso Denegado. Solo el Administrador puede reiniciar las ventas.');
       }
 
-      const confirmPass = prompt("ACCIÓN CRÍTICA: Ingrese su contraseña de Administrador para reiniciar todas las ventas a $ 0:");
+      const confirmPass = prompt("ACCIÓN CRÍTICA: Ingrese su contraseña de Administrador para confirmar el reinicio de ventas a $ 0:");
       if (confirmPass === currentUser.pass) {
         DB.ventas = [];
         saveDB();
-        alert('Ventas reiniciadas a $ 0 COP con éxito.');
+        alert('Se han eliminado todas las ventas. El contador y reportes han vuelto a $ 0 COP.');
       } else if (confirmPass !== null) {
         alert('Contraseña incorrecta. Operación cancelada.');
       }
     }
 
-    // API ALEGRA INTEGRACIÓN
-    async function emitAlegraInvoice(venta) {
-      if (!DB.alegra || !DB.alegra.active || !DB.alegra.email || !DB.alegra.token) {
-        return { success: false, message: 'Alegra no está configurado o desactivado.' };
-      }
-
-      const authHeader = 'Basic ' + btoa(`${DB.alegra.email}:${DB.alegra.token}`);
-      const clienteObj = DB.clientes.find(c => c.nombre === venta.cliente) || DB.clientes[0];
-
-      // Formato JSON que requiere Alegra para Facturación
-      const alegraPayload = {
-        date: venta.fecha,
-        dueDate: venta.fecha,
-        client: {
-          name: clienteObj.nombre,
-          identification: clienteObj.cedula,
-          email: clienteObj.correo || 'factura@supermercado.com'
-        },
-        items: venta.items.map(i => ({
-          name: i.nombre,
-          price: i.precio,
-          quantity: i.qty,
-          tax: [{ id: 3 }] // ID impuesto estándar en Alegra IVA 19%
-        }))
-      };
-
-      try {
-        const response = await fetch('https://api.alegra.com/api/v1/invoices', {
-          method: 'POST',
-          headers: {
-            'Authorization': authHeader,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify(alegraPayload)
-        });
-
-        if (response.ok) {
-          const resData = await response.json();
-          return {
-            success: true,
-            alegraId: resData.id,
-            status: 'Emitida DIAN (Alegra ID: ' + resData.id + ')'
-          };
-        } else {
-          const errData = await response.json();
-          return { success: false, message: errData.message || 'Error al conectar con la API de Alegra' };
-        }
-      } catch (err) {
-        return { success: false, message: 'Error de red o conexión CORS con Alegra API.' };
-      }
-    }
-
-    // EXPORTACIÓN EXCEL
-    function exportProductsExcel() {
-      const data = DB.productos.map(p => ({
-        'Código': p.codigo,
-        'Nombre': p.nombre,
-        'Categoría': p.categoria,
-        'Fecha Vencimiento': p.vencimiento || 'N/A',
-        'Estado Vencimiento (20d)': getVencimientoStatus(p.vencimiento).label,
-        'Precio COP': p.precio,
-        'Costo COP': p.costo,
-        'Stock': p.stock
-      }));
-      const ws = XLSX.utils.json_to_sheet(data);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Productos");
-      XLSX.writeFile(wb, "Productos_Supermercado.xlsx");
-    }
-
-    function exportInventoryExcel() {
-      const data = DB.productos.map(p => ({
-        'Producto': p.nombre,
-        'Categoría': p.categoria,
-        'Fecha Vencimiento': p.vencimiento || 'N/A',
-        'Estado Vencimiento': getVencimientoStatus(p.vencimiento).label,
-        'Stock Actual': p.stock,
-        'Estado Stock': p.stock <= p.minStock ? 'Bajo Stock' : 'Suficiente'
-      }));
-      const ws = XLSX.utils.json_to_sheet(data);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Inventario");
-      XLSX.writeFile(wb, "Reporte_Inventario.xlsx");
-    }
-
-    function exportSalesReportExcel() {
-      const data = DB.ventas.map(v => ({
-        'Factura ID': v.id,
-        'Atendido Por': v.cajero,
-        'Fecha': v.fecha,
-        'Cliente': v.cliente,
-        'Método Pago': v.metodo,
-        'Estado Alegra DIAN': v.alegraStatus || 'Local',
-        'Subtotal COP': v.subtotal,
-        'Valor IVA COP': v.iva,
-        'Total Venta COP': v.total
-      }));
-      const ws = XLSX.utils.json_to_sheet(data);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Ventas");
-      XLSX.writeFile(wb, "Reporte_Ventas.xlsx");
-    }
-
-    // RENDERIZADOS
     function renderAll() {
       renderCategoryDropdowns();
       if (currentUser && currentUser.rol === 'Administrador') {
@@ -824,13 +1096,23 @@
       }
     }
 
+    function getVencimientoStatus(fechaStr) {
+      if(!fechaStr) return { label: 'Sin Fecha', class: 'badge-secondary' };
+      const hoy = new Date();
+      const venc = new Date(fechaStr);
+      const diffDays = Math.ceil((venc - hoy) / (1000 * 60 * 60 * 24));
+      if (diffDays < 0) return { label: 'Vencido', class: 'badge-danger' };
+      if (diffDays <= 7) return { label: `Por vencer (${diffDays}d)`, class: 'badge-warning' };
+      return { label: 'Vigente', class: 'badge-success' };
+    }
+
     function renderDashboard() {
       const hoy = new Date().toISOString().split('T')[0];
       const ventasHoy = DB.ventas.filter(v => v.fecha === hoy).reduce((acc, v) => acc + v.total, 0);
       const stockTotal = DB.productos.reduce((acc, p) => acc + p.stock, 0);
       const vencidosCount = DB.productos.filter(p => {
         const st = getVencimientoStatus(p.vencimiento);
-        return st.diffDays <= 20;
+        return st.label.includes('Vencido') || st.label.includes('Por vencer');
       }).length;
       const gananciasEst = DB.productos.reduce((acc, p) => acc + ((p.precio - p.costo) * p.stock), 0);
       
@@ -863,7 +1145,7 @@
         <tr>
           <td>${p.codigo}</td><td><b>${p.nombre}</b></td>
           <td><span class="badge badge-success">${p.categoria}</span></td>
-          <td><span class="badge ${vencStatus.class}">${p.vencimiento ? p.vencimiento + ' (' + vencStatus.label + ')' : 'N/A'}</span></td>
+          <td><span class="badge ${vencStatus.class}">${p.vencimiento || 'N/A'}</span></td>
           <td>${formatCOP(p.precio)}</td><td>${formatCOP(p.costo)}</td><td>${p.stock}</td>
           <td>
             <button class="btn btn-sm btn-primary" onclick="editProduct('${p.id}')"><i class="fa-solid fa-pen"></i></button>
@@ -942,7 +1224,6 @@
       `}).join('');
     }
 
-    // POS & IVA MODIFICABLE
     function renderPOS() {
       const search = document.getElementById('pos-search')?.value.toLowerCase() || '';
       const tbody = document.getElementById('tbl-pos-products');
@@ -957,7 +1238,7 @@
       `).join('');
 
       const cliSelect = document.getElementById('pos-cliente');
-      if (cliSelect) cliSelect.innerHTML = DB.clientes.map(c => `<option value="${c.nombre}">${c.nombre} (${c.cedula})</option>`).join('');
+      if (cliSelect) cliSelect.innerHTML = DB.clientes.map(c => `<option value="${c.nombre}">${c.nombre}</option>`).join('');
     }
 
     function handlePOSBarcode(e) {
@@ -1005,9 +1286,8 @@
         </div>
       `).join('');
 
-      const ivaPercent = parseFloat(document.getElementById('pos-iva-percent').value) || 0;
       const subtotal = cart.reduce((acc, i) => acc + (i.precio * i.qty), 0);
-      const iva = subtotal * (ivaPercent / 100);
+      const iva = subtotal * (DB.config.iva / 100);
       const total = subtotal + iva;
 
       document.getElementById('pos-subtotal').textContent = formatCOP(subtotal);
@@ -1020,14 +1300,12 @@
       updateCartUI();
     }
 
-    async function processSale() {
+    function processSale() {
       if (cart.length === 0) return alert('El carrito está vacío');
 
-      const ivaPercent = parseFloat(document.getElementById('pos-iva-percent').value) || 0;
       const subtotal = cart.reduce((acc, i) => acc + (i.precio * i.qty), 0);
-      const iva = subtotal * (ivaPercent / 100);
+      const iva = subtotal * (DB.config.iva / 100);
       const total = subtotal + iva;
-      const emitirAlegra = document.getElementById('pos-emitir-alegra').checked;
 
       const venta = {
         id: 'VEN-' + Date.now().toString().slice(-4),
@@ -1035,21 +1313,8 @@
         fecha: new Date().toISOString().split('T')[0],
         cliente: document.getElementById('pos-cliente').value,
         metodo: document.getElementById('pos-metodo').value,
-        ivaRate: ivaPercent,
-        items: [...cart], subtotal, iva, total,
-        alegraStatus: 'Sin Emitir'
+        items: [...cart], subtotal, iva, total
       };
-
-      if (emitirAlegra) {
-        const result = await emitAlegraInvoice(venta);
-        if (result.success) {
-          venta.alegraStatus = result.status;
-          alert('Factura enviada con éxito a Alegra / DIAN');
-        } else {
-          venta.alegraStatus = 'Error Alegra: ' + result.message;
-          alert('Advertencia: Venta registrada localmente, pero no se envió a Alegra. (' + result.message + ')');
-        }
-      }
 
       cart.forEach(item => {
         const p = DB.productos.find(x => x.id === item.id);
@@ -1070,8 +1335,6 @@
       document.getElementById('rec-cajero').textContent = venta.cajero;
       document.getElementById('rec-fecha').textContent = venta.fecha;
       document.getElementById('rec-cliente').textContent = venta.cliente;
-      document.getElementById('rec-alegra-info').textContent = venta.alegraStatus || '';
-      document.getElementById('rec-iva-rate').textContent = venta.ivaRate !== undefined ? venta.ivaRate : DB.config.iva;
       
       document.getElementById('rec-items').innerHTML = venta.items.map(i => `
         <div style="display:flex; justify-content:space-between;">
@@ -1086,7 +1349,7 @@
       document.getElementById('modal-recibo').classList.add('active');
     }
 
-    // USUARIOS
+    // MÓDULO GESTIÓN DE USUARIOS
     function renderUsuarios() {
       const tbody = document.getElementById('tbl-usuarios');
       tbody.innerHTML = DB.usuarios.map(u => `
@@ -1120,7 +1383,7 @@
         rol: document.getElementById('mu-rol').value
       };
 
-      if (!data.nombre || !data.user || !data.pass) return alert('Por favor llene todos los campos');
+      if(!data.nombre || !data.user || !data.pass) return alert('Por favor llene todos los campos');
 
       if (id) {
         const idx = DB.usuarios.findIndex(u => u.id === id);
@@ -1204,7 +1467,7 @@
       const search = document.getElementById('cli-search')?.value.toLowerCase() || '';
       const tbody = document.getElementById('tbl-clientes');
       tbody.innerHTML = DB.clientes.filter(c => c.nombre.toLowerCase().includes(search)).map(c => `
-        <tr><td>${c.cedula}</td><td><b>${c.nombre}</b></td><td>${c.correo || 'N/A'}</td><td>${c.telefono}</td>
+        <tr><td>${c.cedula}</td><td><b>${c.nombre}</b></td><td>${c.telefono}</td><td>${c.puntos} pts</td>
         <td>
           <button class="btn btn-sm btn-primary" onclick="editCliente('${c.id}')"><i class="fa-solid fa-pen"></i></button>
           <button class="btn btn-sm btn-danger" onclick="deleteCliente('${c.id}')"><i class="fa-solid fa-trash"></i></button>
@@ -1216,7 +1479,6 @@
       document.getElementById('mc-id').value = '';
       document.getElementById('mc-cedula').value = '';
       document.getElementById('mc-nombre').value = '';
-      document.getElementById('mc-correo').value = '';
       document.getElementById('mc-telefono').value = '';
       document.getElementById('modal-cliente').classList.add('active');
     }
@@ -1227,7 +1489,6 @@
         id: id || Date.now().toString(),
         cedula: document.getElementById('mc-cedula').value,
         nombre: document.getElementById('mc-nombre').value,
-        correo: document.getElementById('mc-correo').value,
         telefono: document.getElementById('mc-telefono').value,
         puntos: 0
       };
@@ -1241,7 +1502,6 @@
       document.getElementById('mc-id').value = c.id;
       document.getElementById('mc-cedula').value = c.cedula;
       document.getElementById('mc-nombre').value = c.nombre;
-      document.getElementById('mc-correo').value = c.correo || '';
       document.getElementById('mc-telefono').value = c.telefono;
       document.getElementById('modal-cliente').classList.add('active');
     }
@@ -1269,9 +1529,7 @@
       const tbody = document.getElementById('tbl-reportes-ventas');
       tbody.innerHTML = DB.ventas.map(v => `
         <tr>
-          <td>${v.id}</td><td><b>${v.cajero || 'Cajero'}</b></td><td>${v.fecha}</td><td>${v.cliente}</td><td>${v.metodo}</td>
-          <td><span class="badge ${v.alegraStatus && v.alegraStatus.includes('Emitida') ? 'badge-alegra' : 'badge-secondary'}">${v.alegraStatus || 'Local'}</span></td>
-          <td>${formatCOP(v.total)}</td>
+          <td>${v.id}</td><td><b>${v.cajero || 'Cajero'}</b></td><td>${v.fecha}</td><td>${v.cliente}</td><td>${v.metodo}</td><td>${formatCOP(v.total)}</td>
           <td><button class="btn btn-sm btn-secondary" onclick='openReceiptModal(${JSON.stringify(v)})'><i class="fa-solid fa-receipt"></i></button></td>
         </tr>
       `).join('');
@@ -1281,32 +1539,60 @@
       DB.config.nombre = document.getElementById('cfg-nombre').value;
       DB.config.nit = document.getElementById('cfg-nit').value;
       DB.config.iva = parseFloat(document.getElementById('cfg-iva').value) || 19;
-      document.getElementById('pos-iva-percent').value = DB.config.iva;
       saveDB();
-      alert('Configuración local guardada');
+      alert('Configuración guardada correctamente');
     }
 
-    function saveAlegraConfig() {
-      DB.alegra = {
-        email: document.getElementById('cfg-alegra-email').value.trim(),
-        token: document.getElementById('cfg-alegra-token').value.trim(),
-        active: document.getElementById('cfg-alegra-active').value === 'true'
-      };
-      saveDB();
-      alert('Configuración de Facturación Electrónica Alegra guardada con éxito.');
-    }
-
-    // CARGA DE CONFIGURACIÓN
+    // INICIALIZACIÓN
     document.getElementById('cfg-nombre').value = DB.config.nombre;
     document.getElementById('cfg-nit').value = DB.config.nit;
     document.getElementById('cfg-iva').value = DB.config.iva;
-    document.getElementById('pos-iva-percent').value = DB.config.iva;
 
-    if (DB.alegra) {
-      document.getElementById('cfg-alegra-email').value = DB.alegra.email || '';
-      document.getElementById('cfg-alegra-token').value = DB.alegra.token || '';
-      document.getElementById('cfg-alegra-active').value = DB.alegra.active ? 'true' : 'false';
+    // MENÚ RESPONSIVE PARA CELULARES
+    function toggleMobileMenu() {
+      const sidebar = document.querySelector('.sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      const button = document.getElementById('mobile-menu-toggle');
+      if (!sidebar || !backdrop) return;
+
+      const open = !sidebar.classList.contains('mobile-open');
+      sidebar.classList.toggle('mobile-open', open);
+      backdrop.classList.toggle('active', open);
+
+      if (button) {
+        button.setAttribute('aria-expanded', open ? 'true' : 'false');
+        button.innerHTML = open
+          ? '<i class="fa-solid fa-xmark"></i>'
+          : '<i class="fa-solid fa-bars"></i>';
+      }
     }
+
+    function closeMobileMenu() {
+      const sidebar = document.querySelector('.sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      const button = document.getElementById('mobile-menu-toggle');
+
+      if (sidebar) sidebar.classList.remove('mobile-open');
+      if (backdrop) backdrop.classList.remove('active');
+
+      if (button) {
+        button.setAttribute('aria-expanded', 'false');
+        button.innerHTML = '<i class="fa-solid fa-bars"></i>';
+      }
+    }
+
+    // Cierra el menú después de seleccionar una sección.
+    const originalShowSection = showSection;
+    showSection = function(secId, element) {
+      originalShowSection(secId, element);
+      closeMobileMenu();
+    };
+
+    // Si gira el teléfono, aseguramos que el menú no quede abierto.
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 700) closeMobileMenu();
+    });
+
   </script>
 </body>
 </html>
